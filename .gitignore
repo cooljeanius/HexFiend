@@ -1,3 +1,8 @@
 .DS_Store
 HexFiend_2.xcodeproj/project.xcworkspace/*
 HexFiend_2.xcodeproj/xcuserdata/*
+*.pbxuser
+*.perspectivev3
+*.dSYM
+build/*
+*.build

@@ -16,13 +16,13 @@ static BOOL parseSuffixMultiplier(const char *multiplier, unsigned long long *mu
     while (length > 0 && multiplier[length-1] == ' ') length--;
     /* Allow an optional trailing b or B (e.g. MB or M) */
     if (length > 0 && strchr("bB", multiplier[length-1]) != NULL) length--;
-    
+
     /* If this exhausted our string, return success, e.g. so that the user can type "5 b" and it will return a multiplier of 1 */
     if (length == 0) {
         *multiplierResultValue = 1;
         return YES;
     }
-    
+
     /* Now check each SI suffix */
     const char * const decimalSuffixes[] = {"k", "m", "g", "t", "p", "e", "z", "y"};
     const char * const binarySuffixes[] = {"ki", "mi", "gi", "ti", "pi", "ei", "zi", "yi"};
@@ -54,6 +54,7 @@ static BOOL parseSuffixMultiplier(const char *multiplier, unsigned long long *mu
     return NO;
 }
 
+BOOL parseNumericStringWithSuffix(NSString *stringValue, unsigned long long *resultValue, unsigned int *signBit);
 BOOL parseNumericStringWithSuffix(NSString *stringValue, unsigned long long *resultValue, unsigned int *signBit) {
     const char *string = [stringValue UTF8String];
     if (string == NULL) goto invalidString;
@@ -79,10 +80,10 @@ BOOL parseNumericStringWithSuffix(NSString *stringValue, unsigned long long *res
     err = errno;
     if (err != 0 || endPtr == NULL) goto invalidString;
     if (*endPtr != '\0' && ! parseSuffixMultiplier(endPtr, &suffixMultiplier)) goto invalidString;
-    
+
     if (! HFProductDoesNotOverflow(amount, suffixMultiplier)) goto invalidString;
     amount *= suffixMultiplier;
-    
+
     *resultValue = amount;
     *signBit = isNegative ? -1 : 0;
     return YES;

@@ -42,7 +42,7 @@ enum {
 {
 	if(tableView)
 	{}
-	
+
     NSString * temp = [col identifier];
     NSDictionary * tempDrive = (NSDictionary*)[driveList objectAtIndex:rowIndex];
     NSString * returnString = 0;
@@ -67,7 +67,7 @@ enum {
 @implementation OpenDriveWindowController
 
 -(id)init
-{	
+{
 	return [super initWithWindowNibName:@"OpenDriveDialog"];
 }
 
@@ -78,7 +78,7 @@ enum {
     [super dealloc];
 }
 
-- (NSString *)windowNibName 
+- (NSString *)windowNibName
 {
     return @"OpenDriveDialog";
 }
@@ -89,12 +89,12 @@ enum {
 	//[table setDelegate:self];
 	timer = [[NSTimer alloc] initWithFireDate:[NSDate date] interval:0.1 target:self selector:@selector(reloadData) userInfo:nil repeats:FALSE];
 	[NSThread detachNewThreadSelector:@selector(refreshDriveList) toTarget:self withObject:nil];
-    
+
 	//[self window];
 }
 
 
-
+void addDisk(DADiskRef disk, void * context);
 void addDisk(DADiskRef disk, void * context)
 {
     USE(context);
@@ -104,6 +104,7 @@ void addDisk(DADiskRef disk, void * context)
 	}
 }
 
+void removeDisk(DADiskRef disk, void * context);
 void removeDisk(DADiskRef disk, void * context)
 {
 	if(context)
@@ -111,28 +112,28 @@ void removeDisk(DADiskRef disk, void * context)
 }
 
 - (void)refreshDriveList
-{	
+{
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	DASessionRef session;
-    
+
     session = DASessionCreate(kCFAllocatorDefault);
-    
+
     if(driveList == nil)
     {
         driveList = [[NSMutableArray alloc] init];
     }
-    else 
+    else
     {
         [driveList 	removeAllObjects];
     }
-    
-    DARegisterDiskAppearedCallback(session, NULL, addDisk, self); 
+
+    DARegisterDiskAppearedCallback(session, NULL, addDisk, self);
     DARegisterDiskDisappearedCallback(session, NULL, removeDisk, NULL);
-    
+
     DASessionScheduleWithRunLoop(session, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-    
+
     CFRunLoopRun();
-    
+
     CFRelease(session);
     [pool drain];
 }
@@ -144,31 +145,31 @@ void removeDisk(DADiskRef disk, void * context)
 	[self selectDrive];
 }
 
-static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url) 
+static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url)
 {
     if (! url) return NULL;
     CFURLRef result = nil;
     CFStringRef path = CFURLCopyFileSystemPath((CFURLRef)url, kCFURLPOSIXPathStyle);
-    if (path) 
+    if (path)
     {
         char cpath[PATH_MAX + 1];
-        if (CFStringGetFileSystemRepresentation(path, cpath, sizeof cpath)) 
+        if (CFStringGetFileSystemRepresentation(path, cpath, sizeof cpath))
         {
             struct stat sb;
-            if (stat(cpath, &sb)) 
+            if (stat(cpath, &sb))
             {
                 printf("stat('%s') returned error %d (%s)\n", cpath, errno, strerror(errno));
             }
-            else if (S_ISBLK(sb.st_mode)) 
+            else if (S_ISBLK(sb.st_mode))
             {
                 /* It's a block file, so try getting the corresponding character file.  The device number that corresponds to this path is sb.st_rdev (not sb.st_dev, which is the device of this inode, which is the device filesystem itself) */
                 char deviceName[PATH_MAX + 1] = {0};
-                if (devname_r(sb.st_rdev, S_IFCHR, deviceName, sizeof deviceName)) 
+                if (devname_r(sb.st_rdev, S_IFCHR, deviceName, sizeof deviceName))
                 {
                     /* We got the device name.  Prepend /dev/ and then return the URL */
                     char characterDevicePath[PATH_MAX + 1] = "/dev/";
                     size_t slen = strlcat(characterDevicePath, deviceName, sizeof characterDevicePath);
-                    if (slen < sizeof characterDevicePath) 
+                    if (slen < sizeof characterDevicePath)
                     {
                         result = CFURLCreateFromFileSystemRepresentation(NULL, (unsigned char *)characterDevicePath, slen, NO /* not a directory */);
                     }
@@ -180,8 +181,8 @@ static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url)
     return result;
 }
 
-/* Given that a URL 'url' could not be opened because it referenced a block device, construct an error that offers to open the corresponding character device at 'newURL' */ 
-- (NSError *)makeBlockToCharacterDeviceErrorForOriginalURL:(NSURL *)url newURL:(NSURL *)newURL underlyingError:(NSError *)underlyingError 
+/* Given that a URL 'url' could not be opened because it referenced a block device, construct an error that offers to open the corresponding character device at 'newURL' */
+- (NSError *)makeBlockToCharacterDeviceErrorForOriginalURL:(NSURL *)url newURL:(NSURL *)newURL underlyingError:(NSError *)underlyingError
 {
     NSError *result;
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -190,7 +191,7 @@ static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url)
     NSString *recoverySuggestionFormatString = NSLocalizedString(@"Do you want to open the corresponding character device at path '%@'?", @"Recovery suggestion for opening a character device at a given path");
     NSString *recoveryOption = NSLocalizedString(@"Open character device", @"Recovery option for opening a character device at a given path");
     NSString *cancel = NSLocalizedString(@"Cancel", @"Cancel");
-    
+
     NSString *description = [NSString stringWithFormat:descriptionFormatString, [url path]];
     NSString *recoverySuggestion = [NSString stringWithFormat:recoverySuggestionFormatString, [newURL path]];
     NSArray *recoveryOptions = [NSArray arrayWithObjects:recoveryOption, cancel, nil];
@@ -206,7 +207,7 @@ static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url)
                               newURL, kNewURLErrorKey,
                               nil];
     result = [[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:EBUSY userInfo:userInfo];
-    
+
     [userInfo release];
     [pool drain];
     return [result autorelease];
@@ -221,24 +222,24 @@ static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url)
         NSMutableString * path = [NSMutableString stringWithString:@"/dev/"];
         NSDictionary * tempDrive = (NSDictionary*)[driveList objectAtIndex:[table selectedRow]];
         [path appendString:(NSString*)[tempDrive objectForKey:(NSString*)kDADiskDescriptionMediaBSDNameKey]];
-        if ([path length] > 0) 
+        if ([path length] > 0)
         {
             /* Try making the document */
             NSError *error = nil;
             NSURL *url = [NSURL fileURLWithPath:path isDirectory:NO];
             id document = [self openURL:url error:&error];
-            if (! document && error) 
+            if (! document && error)
             {
-                if ([[error domain] isEqual:NSPOSIXErrorDomain] && [error code] == EBUSY) 
+                if ([[error domain] isEqual:NSPOSIXErrorDomain] && [error code] == EBUSY)
                 {
                     /* If this is a block device, try getting the corresponding character device, and offer to open that. */
                     CFURLRef newURL = copyCharacterDevicePathForPossibleBlockDevice(url);
-                    if (newURL) 
+                    if (newURL)
                     {
                         error = [self makeBlockToCharacterDeviceErrorForOriginalURL:url newURL:(NSURL *)newURL underlyingError:error];
                         CFRelease(newURL);
                     }
-                }	    
+                }
                 [NSApp presentError:error];
             }
         }
@@ -305,7 +306,7 @@ static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url)
 {
 	[driveList addObject:dict];
     [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(reloadData:) userInfo:nil repeats:NO];
-	
+
 }
 
 - (void) reloadData:(NSTimer*)theTimer

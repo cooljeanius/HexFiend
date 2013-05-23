@@ -50,7 +50,7 @@ static NSString *sNibName;
     }
     HFASSERT(resultObject != nil);
     if (otherObjects != nil) [resultObject setOtherTopLevelObjects:otherObjects];
-    
+
     /* This object is NOT sent autorelease too many times, no matter what the analyzer says, because it has an extra retain by virtue of being a nib top level object. */
     return resultObject;
 }
@@ -100,7 +100,7 @@ static NSView *searchForViewWithIdentifier(NSView *view, NSString *identifier) {
     } else if ([view respondsToSelector:@selector(userInterfaceItemIdentifier)]) {
         if ([[view userInterfaceItemIdentifier] isEqual:identifier]) result = view;
     }
-    
+
     if (! result) {
         /* Try subviews */
         for (NSView *subview in [view subviews]) {
@@ -223,20 +223,22 @@ static NSView *searchForViewWithIdentifier(NSView *view, NSString *identifier) {
     tracker = [[HFProgressTracker alloc] init];
     [tracker setDelegate:self];
     [progressIndicator setDoubleValue:0];
-    
+
     [cancelButton setHidden:NO];
     [progressIndicator setHidden:NO];
     [tracker setProgressIndicator:progressIndicator];
     [tracker beginTrackingProgress];
-    
+
     [self retain];
     [self willChangeValueForKey:@"operationIsRunning"];
     waitGroup = dispatch_group_create();
     dispatch_group_async(waitGroup, dispatch_get_global_queue(0, 0), ^{
-        @autoreleasepool {
+        NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+        {
             threadResult = [startBlock(tracker) retain];
             [tracker noteFinished:self];
         }
+        [pool drain];
     });
     [self didChangeValueForKey:@"operationIsRunning"];
     [cancelButton setHidden: ! [self operationIsRunning]];
