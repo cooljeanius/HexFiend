@@ -7,14 +7,14 @@
 //
 
 #import "HFTclTemplateController.h"
-#import <tcl.h>
-#import <tclTomMath.h>
 #import <zlib.h>
 #import <HexFiend/HFEncodingManager.h>
 #import "MinimumVersionRequired.h"
 
-// Tcl_ParseArgsObjv was added in Tcl 8.6, but macOS ships with Tcl 8.5
-#import "Tcl_ParseArgsObjv.h"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wquoted-include-in-framework-header"
+#import <Tcl/tcl.h>
+#pragma clang diagnostic pop
 
 static Tcl_Obj* tcl_obj_from_uint64(uint64_t value) {
     char buf[21];
