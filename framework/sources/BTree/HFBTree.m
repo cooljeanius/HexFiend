@@ -444,7 +444,7 @@ FORCE_STATIC_INLINE HFBTreeNode *add_child_to_node_possibly_creating_split(HFBTr
     
     HFASSERT(node->children[BTREE_ORDER - 1] != nil); /* we require that it be full */
     id allEntries[BTREE_ORDER + 1];
-    memcpy(allEntries, node->children, BTREE_ORDER * sizeof *node->children);
+    memcpy((void*)allEntries, node->children, BTREE_ORDER * sizeof *node->children);
     allEntries[BTREE_ORDER] = nil;
     
     /* insert_value_into_array applies a retain, so allEntries owns a retain on its values */
@@ -872,7 +872,7 @@ static HFBTreeNode *mutable_copy_node(HFBTreeNode *node, TreeDepth_t depth, HFBT
     }
     
     /* Leave us for our future right neighbor to find */
-    linkingHelper[0] = (__bridge HFBTreeNode *)((void *)result);
+    linkingHelper[0] = (__bridge HFBTreeNode *)((__bridge void *)result);
     
     HFBTreeIndex index;
     for (index = 0; index < BTREE_ORDER; index++) {

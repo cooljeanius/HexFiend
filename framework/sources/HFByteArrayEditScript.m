@@ -276,10 +276,10 @@ static BOOL validate_instructions(const struct HFEditInstruction_t *insns, size_
 BYTEARRAY_RELEASE_INLINE
 void append_snake_to_instructions(HFByteArrayEditScript *self, unsigned long long srcOffset, unsigned long long dstOffset, unsigned long long snakeLength) {
     HFASSERT(snakeLength > 0);
-    void * const selfP = self; //no need to retain self in the block
+    void * const selfP = (__bridge void *)(self); //no need to retain self in the block
     
     dispatch_async(self->insnQueue, ^{
-        HFByteArrayEditScript * const self = selfP;
+        HFByteArrayEditScript * const self = (__bridge HFByteArrayEditScript *)(selfP);
         
         /* Bail if we cancelled */
         if (*self->cancelRequested) return;

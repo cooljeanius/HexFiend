@@ -63,7 +63,7 @@ static void tarjan(HFObjectGraph *self, id node, CFMutableDictionaryRef vIndexes
         BOOL successorIndexIsDefined = CFDictionaryGetValueIfPresent(vIndexes, (__bridge const void *)(successor), (const void **)&successorIndex);
         if (! successorIndexIsDefined) {
             tarjan(self, successor, vIndexes, vLowlinks, stack, index, NULL, resultStronglyConnectedComponents);
-            HFASSERT(CFDictionaryContainsKey(vLowlinks, (__bridge const void *)(node)) && CFDictionaryContainsKey(vLowlinks, successor));
+            HFASSERT(CFDictionaryContainsKey(vLowlinks, (__bridge const void *)(node)) && CFDictionaryContainsKey(vLowlinks, (__bridge const void *)(successor)));
             NSUInteger possibleNewLowlink = (NSUInteger)CFDictionaryGetValue(vLowlinks, (__bridge const void *)(successor));
             if (possibleNewLowlink < vLowlink) {
                 vLowlink = possibleNewLowlink;
