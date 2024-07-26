@@ -28,7 +28,7 @@
 	<key>CFBundleIconFile</key>
 	<string>hex_icon</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.ridiculousfish.HexFiend</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
