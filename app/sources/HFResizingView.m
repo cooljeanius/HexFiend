@@ -17,7 +17,7 @@
         viewsToInitialFrames = (__strong CFMutableDictionaryRef)CFMakeCollectable(CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks));
         
         FOREACH(NSView *, subview, [self subviews]) {
-            CFDictionarySetValue(viewsToInitialFrames, subview, [NSValue valueWithRect:[subview frame]]);
+            CFDictionarySetValue(viewsToInitialFrames, (__bridge const void *)(subview), [NSValue valueWithRect:[subview frame]]);
         }
     }
 }
@@ -95,7 +95,7 @@ static Position_t computePosition(id view, CGFloat startOffset, CGFloat startWid
     NSRect bounds = [self bounds];
     if (viewsToInitialFrames) {
         FOREACH(NSView *, view, [self subviews]) {
-            NSValue *originalFrameValue = (NSValue *)CFDictionaryGetValue(viewsToInitialFrames, view);
+            NSValue *originalFrameValue = (NSValue *)CFDictionaryGetValue(viewsToInitialFrames, (__bridge const void *)(view));
             if (originalFrameValue) 
                 [self resizeView:view withOriginalFrame:[originalFrameValue rectValue] intoBounds:bounds];
         }

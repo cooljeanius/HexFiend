@@ -138,7 +138,7 @@ static void generateGlyphs(NSFont *baseFont, NSMutableArray *fonts, struct HFGly
                 CGGlyph glyph;
                 unichar c = [substitutionFontsGlyphFetchingString characterAtIndex:i];
                 NSString *substring = [[NSString alloc] initWithCharacters:&c length:1];
-                BOOL success = getGlyphs(&glyph, substring, (NSFont *)substitutionFont);
+                BOOL success = getGlyphs(&glyph, substring, (__bridge NSFont *)substitutionFont);
                 [substring release];
                 
                 if (! success) {
@@ -147,9 +147,9 @@ static void generateGlyphs(NSFont *baseFont, NSMutableArray *fonts, struct HFGly
                 } else {
                     /* Find the index in fonts.  If none, add to it. */
                     HFASSERT(fonts != nil);
-                    NSUInteger fontIndex = [fonts indexOfObject:(id)substitutionFont];
+                    NSUInteger fontIndex = [fonts indexOfObject:(__bridge id)substitutionFont];
                     if (fontIndex == NSNotFound) {
-                        [fonts addObject:(id)substitutionFont];
+                        [fonts addObject:(__bridge id)substitutionFont];
                         fontIndex = [fonts count] - 1;
                     }
                     

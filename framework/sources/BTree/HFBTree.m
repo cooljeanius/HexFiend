@@ -872,7 +872,7 @@ static HFBTreeNode *mutable_copy_node(HFBTreeNode *node, TreeDepth_t depth, HFBT
     }
     
     /* Leave us for our future right neighbor to find */
-    linkingHelper[0] = (void *)result;
+    linkingHelper[0] = (__bridge HFBTreeNode *)((void *)result);
     
     HFBTreeIndex index;
     for (index = 0; index < BTREE_ORDER; index++) {
@@ -1047,7 +1047,7 @@ FORCE_STATIC_INLINE void btree_apply_function_to_entries(HFBTree *tree, HFBTreeI
 
 
 static BOOL add_to_array(id entry, HFBTreeIndex offset __attribute__((unused)), void *array) {
-    [(id)array addObject:entry];
+    [(__bridge id)array addObject:entry];
     return YES;
 }
 
@@ -1057,7 +1057,7 @@ static BOOL add_to_array(id entry, HFBTreeIndex offset __attribute__((unused)), 
     unsigned int depthIndex = depth;
     while (depthIndex--) treeCapacity *= BTREE_ORDER;
     NSMutableArray *result = [NSMutableArray arrayWithCapacity: treeCapacity/2]; //assume we're half full
-    btree_apply_function_to_entries(self, 0, add_to_array, result);
+    btree_apply_function_to_entries(self, 0, add_to_array, (__bridge void *)(result));
     return result;
 }
 

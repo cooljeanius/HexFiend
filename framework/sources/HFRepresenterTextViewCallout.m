@@ -379,7 +379,7 @@ static double distanceMod1(double a, double b) {
     CTFontRef ctfont = CTFontCreateWithName(CFSTR("Helvetica-Bold"), 1., NULL);
     if (ctfont) {
         // Set the font
-        [(NSFont *)ctfont set];
+        [(__bridge NSFont *)ctfont set];
             
         // Get characters
         NSUInteger labelLength = MIN([label length], kHFRepresenterTextViewCalloutMaxGlyphCount);

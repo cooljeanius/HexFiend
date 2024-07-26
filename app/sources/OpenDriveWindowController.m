@@ -236,7 +236,7 @@ static CFURLRef copyCharacterDevicePathForPossibleBlockDevice(NSURL *url)
                     CFURLRef newURL = copyCharacterDevicePathForPossibleBlockDevice(url);
                     if (newURL)
                     {
-                        error = [self makeBlockToCharacterDeviceErrorForOriginalURL:url newURL:(NSURL *)newURL underlyingError:error];
+                        error = [self makeBlockToCharacterDeviceErrorForOriginalURL:url newURL:(__bridge NSURL *)newURL underlyingError:error];
                         CFRelease(newURL);
                     }
                 }

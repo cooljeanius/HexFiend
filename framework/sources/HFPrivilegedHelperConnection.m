@@ -199,7 +199,7 @@ static NSString *read_line(FILE *file) {
         CFErrorRef localError = NULL;
 		err = ! SMJobBless(kSMDomainSystemLaunchd, label, authRef, (CFErrorRef *)&localError);
         if (localError) {
-            if (error) *error = [[(id)localError retain] autorelease];
+            if (error) *error = [[(__bridge id)localError retain] autorelease];
             CFRelease(localError);
         }
 	}
